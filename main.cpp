@@ -30,8 +30,8 @@ void bateriaDeTestesComValores();
 int main(int argc, char **argv) {
 	cout << "PCDRMM_MATHEURISTICA" << endl;
 
-	bateriaDeTestesComValores();
-	return 0;
+	//bateriaDeTestesComValores();
+	//return 0;
 	int qt = 1;
 
 	vector<float> execucao(qt, 0);
@@ -43,14 +43,15 @@ int main(int argc, char **argv) {
 
 		cout << "instancia " << i + 1 << endl;
 
-		string instancia = "Instancias_Denise";
+		/*string instancia = "Instancias_Denise";
 		Arquivo arq(instancia, i);
 		Dados *d = arq.lerInstancia();
+		*/
 
-		/*string instancia = "PSPLIB/j10";
+		string instancia = "PSPLIB/j10";
 		 Arquivo arq(instancia, i);
 		 Dados *d = arq.lerInstanciaPSPLIB();
-		 */
+
 
 		Solucao *s1 = new Solucao(d);
 		s1->iniciarSolucaoComMelhorCusto();
@@ -80,7 +81,7 @@ int main(int argc, char **argv) {
 		valores[i] = s->custo;
 		tempos[i] = s->tempo;
 
-		g.plotarTrandOFF(h.fronteira);
+		//g.plotarTrandOFF(h.fronteira);
 
 
 
@@ -121,8 +122,8 @@ int main(int argc, char **argv) {
 
 void bateriaDeTestesComValores() {
 
-	int repeticoes = 50;
-	int qt_inst = 20;
+	int repeticoes = 30;
+	int qt_inst = 10;
 
 	vector<float> bestCusto(qt_inst, INT_MAX);
 	vector<float> mediaCusto(qt_inst, 0);
@@ -137,7 +138,7 @@ void bateriaDeTestesComValores() {
 
 	cout << "PSPLIB/j10" << endl;
 
-	for (int i = 9 ; i < qt_inst; i++) {
+	for (int i = 0 ; i < qt_inst; i++) {
 		cout << "\t" << i << " " << endl;
 
 		string instancia = "PSPLIB/j10";
@@ -162,11 +163,11 @@ void bateriaDeTestesComValores() {
 			clock_t start_time;
 			start_time = clock();
 
-			h.pso(50);
+			//h.pso(50);
 
-			 Solucao *s = &(*h.fronteira.begin()); // new Solucao(d);//
+			//Solucao *s = &(*h.fronteira.begin()); // new Solucao(d);//
 
-			//Solucao *s = h.geneticAlgorithms(20);
+			Solucao *s = h.geneticAlgorithms(20);
 
 			float time_in_seconds = (clock() - start_time)
 					/ (double) CLOCKS_PER_SEC;

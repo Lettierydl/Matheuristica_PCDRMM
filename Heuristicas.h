@@ -58,6 +58,7 @@ public:
 	/*Algoritmos Geneticos*/
 	Solucao cruzamento(Solucao s1, Solucao s2);
 	vector<Solucao> cruzamento2(Solucao s1, Solucao s2);
+	vector<Solucao> roleta(vector<Solucao> & populacao, int qt_selecionados);
 
 	void mutar(Solucao s1);
 

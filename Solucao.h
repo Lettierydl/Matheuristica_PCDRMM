@@ -13,7 +13,12 @@
 #include <algorithm>
 
 class Solucao {
+
 public:
+
+	static int min_tempo;
+	static float min_cuto;
+	static float max_cuto;
 
 	Dados * d;
 	int* demanda; // demanda dos recursos utilizado na solucao
@@ -27,7 +32,6 @@ public:
 	vector<bool> alocadas; // vetor que diz se a atividade j esta alocada
 	vector<vector<int> > tr; // matriz de tipo de recurso k por tempo t , onde o conteúdo int é a quantidade utilizada de recurso to tipo k no tempo t.
 
-
 	/* Atributos do PSO */
 	vector<int> v; // velocidade
 	vector<int> v_new; // nova velocidade
@@ -37,16 +41,15 @@ public:
 	vector<int> fal; // escalonamento da solucao segundo a ideia do FAL
 	Solucao * pbest;
 	Solucao * gbest;
-	vector<  vector<int>  > possiveis_qi;// atividades possiveis candidatas a serem qi dela(ou seja, devem iniciar antes dela)
+	vector<vector<int> > possiveis_qi; // atividades possiveis candidatas a serem qi dela(ou seja, devem iniciar antes dela)
 
 	/*PSO*/
 	void contruirFal();
 	void reconstruirSolucaoComFAL();
 	void preencherPossiveisQi();
-	void preencherPossiveisQiComPredecessores();//preencher os possiveis qis com os predecessores
+	void preencherPossiveisQiComPredecessores(); //preencher os possiveis qis com os predecessores
 	void preencherFalXComAntecessores(int j);
-	int alocarQi(int qi);//aloca todas as atividades predecessoras e retorna o tempo de fim da ultima atividade
-
+	int alocarQi(int qi); //aloca todas as atividades predecessoras e retorna o tempo de fim da ultima atividade
 
 	/* Métodos de Operações Bases */
 	void alocarAtividade(int j, int ti, int mi); // aloca atividade j no tempo de inicio ti, no modo mi, ja faz toda as alteracoes na solucao
@@ -67,7 +70,7 @@ public:
 	int verificarTempoInicioTardeDentroDeD(int j); // verifica o tempo de inicio mais tarde da ativiade j verificando seus sucessores e dentro do tempo limite para o projeto d->D
 	int verificarTempoInicioTardeForaD(int j);
 
-	int verificarTempoFimMaisTardeDentroDeD(int j);// verifica o tempo de fim mais tarde para a atividade j
+	int verificarTempoFimMaisTardeDentroDeD(int j); // verifica o tempo de fim mais tarde para a atividade j
 
 	int verificarMelhorModoPeloTempo(int j); // verifica o modo que gastará menos tempo, desconsiderando o custo do recurso
 	int verificarMelhorModoPelaUtilizacao(int j); // verifica o modo que utiliza menos recursos, desconsiderando o tempo de duracao da atividade
@@ -81,11 +84,12 @@ public:
 
 	/* Métodos de Calculos */
 	list<int> calcularCaminhoDoFinalAteInicio(Solucao *s); //patindo do makespan e refeito o caminho ate a atividade 0
-	int calcularFolgaDeCaminhoAteInicio(int j, list<int> * caminho);// valor de folga da atividade j ate a atividae 0, percorrendo seus predecessores
-	int calcularFolgaDeCaminhoAteFim(int j, list<int> * caminho);// valor de folga da atividade j ate o makespan, percorrendo seus sussesores
+	int calcularFolgaDeCaminhoAteInicio(int j, list<int> * caminho); // valor de folga da atividade j ate a atividae 0, percorrendo seus predecessores
+	int calcularFolgaDeCaminhoAteFim(int j, list<int> * caminho); // valor de folga da atividade j ate o makespan, percorrendo seus sussesores
 	void calcular_valores(); //calcula o custo e o tempo
 	float calcular_custo();
 	int calcular_tempo();
+	float fitness(int min_time, float max_custo, float min_custo);
 
 	/*Métodos de Ordenacao*/
 	/*precos maiores aparecem primeiros*/
@@ -97,24 +101,23 @@ public:
 	Solucao(Solucao *s);
 	virtual ~Solucao();
 
-	bool operator < (Solucao const&s1)  {
-			if(s1.tempo ==  this->tempo){
-				return (this->tempo < s1.tempo);
-			}else{
-				//return (s1.custo < s2.custo);
-				return (this->custo < s1.custo);
-			}
-
+	bool operator <(Solucao const&s1) {
+		if (s1.tempo == this->tempo) {
+			return (this->tempo < s1.tempo);
+		} else {
+			//return (s1.custo < s2.custo);
+			return (this->custo < s1.custo);
 		}
 
+	}
 
 };
 
 struct SolucaoCompare {
 	bool operator()(Solucao const&s1, Solucao const&s2) const {
-		if(s1.tempo ==  s2.tempo){
+		if (s1.tempo == s2.tempo) {
 			return (s1.tempo < s2.tempo);
-		}else{
+		} else {
 			//return (s1.custo < s2.custo);
 			return (s1.custo < s2.custo);
 		}
@@ -128,40 +131,63 @@ struct SolucaoComparePorcentagem {
 
 		int mint = std::min(s1.tempo, s2.tempo);
 
-		int ts1 = (((mint * 90) / s1.tempo) -100) * -1; // porcentagem de quanto falta para alcancar a data limit do problema
-		int ts2 = (((mint * 90) / s2.tempo) -100) * -1;
+		int ts1 = (((mint * 90) / s1.tempo) - 100) * -1; // porcentagem de quanto falta para alcancar a data limit do problema
+		int ts2 = (((mint * 90) / s2.tempo) - 100) * -1;
 
 		float min = std::min(s1.custo, s2.custo);
 
 		int cs1 = (((min * 100) / s1.custo) - 100) * -1; // porcentagem de quanto esta longe do melhor custo
 		int cs2 = (((min * 100) / s2.custo) - 100) * -1;
 
-
 		return ((ts1 + cs1) < (ts2 + cs2));
 	}
 };
 
-struct SolucaoCompareAG {//comparacao para guiar o algoritmo genetico
+struct SolucaoCompareAG { //comparacao para guiar o algoritmo genetico
 	bool operator()(Solucao const&s1, Solucao const&s2) const {
-		if(s1.tempo == s1.d->D && s2.tempo != s2.d->D){
+		if (s1.tempo == s1.d->D && s2.tempo != s2.d->D) {
 			return true;
-		}else if (s2.tempo == s2.d->D && s1.tempo != s1.d->D){
+		} else if (s2.tempo == s2.d->D && s1.tempo != s1.d->D) {
 			return false;
 		}
 		//s1.calcular_valores(); s2.calcular_valores();
 
 		float mint = std::min(s1.tempo, s2.tempo);
 
-		int ts1 = (((mint * 90) / s1.tempo) -100) * -1; // porcentagem de quanto falta para alcancar a data limit do problema
-		int ts2 = (((mint * 90) / s2.tempo) -100) * -1;
+		int ts1 = (((mint * 90) / s1.tempo) - 100) * -1; // porcentagem de quanto falta para alcancar a data limit do problema
+		int ts2 = (((mint * 90) / s2.tempo) - 100) * -1;
 
 		float min = std::min(s1.custo, s2.custo);
 
 		float cs1 = (((min * 100) / s1.custo) - 100) * -1; // porcentagem de quanto esta longe do melhor custo
 		float cs2 = (((min * 100) / s2.custo) - 100) * -1;
 
-
 		return ((ts1 + cs1) < (ts2 + cs2));
+	}
+};
+
+struct SolucaoCompareAGFitness { //comparacao para guiar o algoritmo genetico
+	bool operator()(Solucao const&s1, Solucao const&s2) const {
+
+		float p_t = 0.5;
+		float p_c = 0.5;
+		int max_tempo = std::max(s1.tempo, s2.tempo);
+		int min_tempo = std::min(s1.tempo, s2.tempo);
+		float min_custo = std::min(s1.custo, s2.custo);
+		float max_custo = std::max(s1.custo, s2.custo);
+		if(min_tempo == max_tempo){
+			min_tempo-=1;
+		}
+		float t_norma1 = (s1.tempo - min_tempo) / (max_tempo - min_tempo);
+		float t_norma2 = (s2.tempo - min_tempo) / (max_tempo - min_tempo);
+
+		float c_norma1 = (s1.custo - min_custo) / (max_custo - min_custo);
+		float c_norma2 = (s2.custo - min_custo) / (max_custo - min_custo);
+
+
+		float fit1 = (p_t * t_norma1) + (p_c * c_norma1);
+		float fit2 = (p_t * t_norma2) + (p_c * c_norma2);
+		return fit1 < fit2;
 	}
 };
 

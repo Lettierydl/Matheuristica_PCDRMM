@@ -10,6 +10,7 @@
 #include "Grafico.h"
 #include "AlgAux.h"
 #include "CPLEX.h"
+#include <math.h>
 #include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
@@ -492,18 +493,22 @@ Solucao * Heuristicas::geneticAlgorithms(int geracoes) {
 	populacao[4].iniciarSolucaoComModosAleatoriosDentroDaDataLimite();
 
 	for (int tam = 5; tam < tamanhoPopulacao; tam++) {
-		populacao[tam].iniciarSolucaoComModosAleatoriosDentroDaDataLimite();
-		//populacao[tam].iniciarSolucaoComModosAleatorios();
+			populacao[tam].iniciarSolucaoComModosAleatoriosDentroDaDataLimite();
+			//populacao[tam].iniciarSolucaoComModosAleatorios();
 	}
+//	Grafico g;
+//	g.plotarTrandOFF(fronteira);
+
+
 
 	for (int g = 0; g < geracoes; g++) {
 		//criterio de parada por populacao identica
-		if (populacao[0].custo == populacao[populacao.size() - 1].custo
+		/*if (populacao[0].custo == populacao[populacao.size() - 1].custo
 				&& populacao[0].tempo
 						== populacao[populacao.size() - 1].tempo) {
 			//cout << "parou na geracao " << g << endl;
 			//break;
-		}
+		}*/
 
 		/*
 		 cout << "Geracao: " << g << ", populacao " << populacao.size();
@@ -520,6 +525,7 @@ Solucao * Heuristicas::geneticAlgorithms(int geracoes) {
 
 		/*selecao e cruzamento*/
 		vector<Solucao> gerados = selecaoECruzamento(populacao);
+
 
 		/*
 
@@ -539,6 +545,7 @@ Solucao * Heuristicas::geneticAlgorithms(int geracoes) {
 		for (int i = 0; i < gerados.size(); i++) {
 			populacao.push_back(gerados[i]);
 		}
+
 
 		sort(populacao.begin(), populacao.end(), sAG);
 
@@ -560,11 +567,12 @@ Solucao * Heuristicas::geneticAlgorithms(int geracoes) {
 			populacao.erase(--populacao.end());
 		}
 
+
 		int rad = rand() % populacao.size();
 		//vizinhancaCPLEX(&populacao[rad]);
-		//	cout << populacao[0].custo << "X" << populacao[0].tempo << endl;
+		//cout << populacao[0].custo << "X" << populacao[0].tempo << endl;
 		vizinhancaCPLEX(&populacao[0]);
-//		cout << populacao[0].custo << "X" << populacao[0].tempo << endl;
+		//cout << populacao[0].custo << "X" << populacao[0].tempo << endl;
 //		cout << "E" << endl;
 //		cout << populacao[rad].custo << "X" << populacao[rad].tempo << endl;
 		vizinhancaCPLEX(&populacao[rad]);
@@ -597,46 +605,130 @@ Solucao * Heuristicas::geneticAlgorithms(int geracoes) {
 
 }
 
+vector<Solucao> Heuristicas::roleta(vector<Solucao> & populacao, int qt_selecionados) {
+	vector<Solucao> selecionados;
+	vector<float> fitness(populacao.size());
+	vector<float> probabilidade(populacao.size());
+	int min_time = populacao[0].tempo;
+	float min_custo = populacao[0].custo;
+	float max_custo = populacao[0].custo;
+	float sum_fitness = 0;
+
+	for (int qt = 0; qt <= qt_selecionados; qt++) {
+
+		for (int i = 1; i < populacao.size(); i++) {// calcula max e min custo e tempo
+			if (min_time > populacao[i].tempo) {
+				min_time = populacao[i].tempo;
+			}
+			if (min_custo > populacao[i].custo) {
+				min_custo = populacao[i].custo;
+			}
+			if (max_custo < populacao[i].custo) {
+				max_custo = populacao[i].custo;
+			}
+		};
+
+
+		SolucaoCompareAGFitness sAGF;
+		sort(populacao.begin(), populacao.end(), sAGF);
+
+		for (int i = 0; i < populacao.size(); i++) {
+			fitness[i] = populacao[i].fitness(min_time, max_custo, min_custo);// calcula o fitness de cada
+			sum_fitness += fitness[i];// somatorio total do fitness
+		}
+
+		float sun_prob = 0;
+		//probabilidade[0] = (sum_fitness - fitness[0] / sum_fitness);
+		for (int i = 0; i < populacao.size(); i++) {// probabilidade de i, quanto maior a probabilidade melhor para i
+			probabilidade[i] = (sum_fitness - fitness[i] / sum_fitness) ;
+			sun_prob += probabilidade[i];
+		}
+
+		srand((unsigned)time(0));
+		float seed = fmod ( rand() , sun_prob );
+
+		//agora verificar a probabilidade
+
+		for (int i = 0; i < populacao.size(); i++) {
+			if(probabilidade[i] >= seed){// encontramos o escolhido
+				cout << i << endl;
+				bool contens = false;
+				do{// verificando se ele ja foi escolhido, se sim, passa para o seu proximo (i++)
+					contens = false;
+					for(int s = 0; s < selecionados.size() ;s++){
+						if(selecionados[s].custo == populacao[i].custo && selecionados[s].tempo == populacao[i].tempo){
+							contens = true;
+							i++;
+							break;
+						}
+					}
+				}while(contens);
+				// i é o selecionado
+				selecionados.push_back(populacao[i]);
+				break;
+			}else{
+				seed -= probabilidade[i];
+			}
+		}
+
+	}
+	return selecionados;
+}
+
+
 vector<Solucao> Heuristicas::selecaoECruzamento(vector<Solucao> & populacao) {
 	/*selecao e cruzamento*/
 	vector<Solucao> gerados;
 
-	switch (1) {
-	case 2: //cruzamento 2
-		for (int ind2 = populacao.size() - 1; ind2 > 0; ind2--) {
-			if (populacao[0].tempo == populacao[ind2].tempo
-					&& populacao[0].custo == populacao[ind2].custo) {
-				if (populacao[0].tempo == populacao[populacao.size() - 1].tempo
-						&& populacao[0].custo
-								== populacao[populacao.size() - 1].custo) {
-					break; // populacao identica
+	switch (3) {
+		case 1: //cruzamento aleatorio
+			for (int ind = 0, ind2 = populacao.size() - 1; ind < ind2;
+					ind++, ind2--) {
+				if (populacao[ind].tempo == populacao[ind2].tempo
+						&& populacao[ind].custo == populacao[ind].custo) {
+					gerados.push_back(
+							cruzamento(populacao[0],
+									populacao[populacao.size() - 1]));
+				} else {
+					gerados.push_back(cruzamento(populacao[0], populacao[ind2]));
 				}
-				vector<Solucao> filhos = cruzamento2(populacao[0],
-						populacao[populacao.size() - 1]);
-				gerados.push_back(filhos[0]);
-				gerados.push_back(filhos[1]);
-			} else {
-				vector<Solucao> filhos = cruzamento2(populacao[0],
-						populacao[ind2]); // o erro esta aqui
-				gerados.push_back(filhos[0]);
-				gerados.push_back(filhos[1]);
 			}
-		}
-		break;
-	default: //cruzamento aleatorio
-		for (int ind = 0, ind2 = populacao.size() - 1; ind < ind2;
-				ind++, ind2--) {
-			if (populacao[ind].tempo == populacao[ind2].tempo
-					&& populacao[ind].custo == populacao[ind].custo) {
-				gerados.push_back(
-						cruzamento(populacao[0],
-								populacao[populacao.size() - 1]));
-			} else {
-				gerados.push_back(cruzamento(populacao[0], populacao[ind2]));
+			break;
+
+		case 2: //cruzamento 2
+			for (int ind2 = populacao.size() - 1; ind2 > 0; ind2--) {
+				if (populacao[0].tempo == populacao[ind2].tempo
+						&& populacao[0].custo == populacao[ind2].custo) {
+					if (populacao[0].tempo == populacao[populacao.size() - 1].tempo
+							&& populacao[0].custo
+									== populacao[populacao.size() - 1].custo) {
+						break; // populacao identica
+					}
+					vector<Solucao> filhos = cruzamento2(populacao[0],
+							populacao[populacao.size() - 1]);
+					gerados.push_back(filhos[0]);
+					gerados.push_back(filhos[1]);
+				} else {
+					vector<Solucao> filhos = cruzamento2(populacao[0],
+							populacao[ind2]); // o erro esta aqui
+					gerados.push_back(filhos[0]);
+					gerados.push_back(filhos[1]);
+				}
 			}
+			break;
+		case 3:
+
+			cout <<"<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>"<< endl;
+			int qt_selecionados = 0.5 * populacao.size(); // 50%dos indivíduos serao selecionados
+			vector<Solucao> selecionados = roleta(populacao, qt_selecionados);
+			cout <<"IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII"<< endl;
+			int ind1 = 0;
+			for ( int ind2 = selecionados.size() - 1; ind2 >= 0; ind2--, ind1++) {
+					gerados.push_back(cruzamento(selecionados[ind1] , selecionados[ind2]));
+
+			}
+			break;
 		}
-		break;
-	}
 
 	return gerados;
 }

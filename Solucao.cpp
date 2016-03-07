@@ -729,6 +729,19 @@ int Solucao::calcular_tempo() {
 	alocarAtividade(d->j-1,tempo,0);
 	return this->tempo;
 }
+
+float Solucao::fitness(int min_time, float max_custo, float min_custo){
+	this->calcular_valores();
+	float p_t = 0.5;float p_c = 0.5;
+	float t_norma = 1; //penalizar por ter passado da data D
+	if( tempo <= d->D ){
+		t_norma = (tempo - min_time) / (d->D - min_time);
+	}
+
+	float c_norma = (custo - min_custo) / (max_custo - min_custo);
+	return (p_t * t_norma) + (p_c * c_norma);
+}
+
 vector<int> Solucao::ordenarRecursosPorPrecos() {
 
 	vector<int> recs(d->tipos);
