@@ -28,6 +28,7 @@ void Arquivo::instancia_denise(int numero, const string& nomeArquivo) {
 	}
 }
 
+
 void Arquivo::instancia_PSPLIB(int indice, vector<string> arq, const string& nomeArquivo) {
 	stringstream ss;
 	ss << nomeArquivo << "/" << arq[indice];
@@ -37,9 +38,10 @@ void Arquivo::instancia_PSPLIB(int indice, vector<string> arq, const string& nom
 	if (!(this->dados.is_open())) {
 		cout << "arquivo "<< nomeArquivo << " nao pode ser aberto" << endl;
 	}else{
-		cout <<nomeArquivo << "/" << arq[indice]<< endl;
+		//cout <<nomeArquivo << "/" << arq[indice]<< endl;
 	}
 }
+
 
 Arquivo::Arquivo(string nomeArquivo, int numero) {
 	if(nomeArquivo.compare("Instancias_Denise") == 0){

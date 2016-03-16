@@ -27,8 +27,20 @@ using namespace std;
 
 void bateriaDeTestesComValores();
 
-int main(int argc, char **argv) {
-	cout << "PCDRMM_MATHEURISTICA" << endl;
+/*geracao, tam_pop, mutacao, instancia*/
+int main(int argc, char *argv[]) {
+//	cout << "PCDRMM_MATHEURISTICA" << endl;
+
+	int tam_pop, geracao,indice;
+	float mutacao;
+	bool parametros = false;
+	if (argc > 1) {
+		geracao = atoi(argv[1]);
+		tam_pop = atoi(argv[2]);
+		mutacao = atof(argv[3]);
+		indice = atoi(argv[4]);
+		parametros = true;
+	}
 
 	//bateriaDeTestesComValores();
 	//return 0;
@@ -39,91 +51,56 @@ int main(int argc, char **argv) {
 	vector<float> valores(qt, 0);
 	vector < string > instancia_name(qt);
 
-	for (int i = 1; i <= qt; i++) {
+	for (int i = 0; i < qt; i++) {
 
-		cout << "instancia " << i + 1 << endl;
-
-		/*string instancia = "Instancias_Denise";
-		Arquivo arq(instancia, i);
-		Dados *d = arq.lerInstancia();
-		*/
+//		cout << "instancia " << i << endl;
 
 		string instancia = "PSPLIB/j10";
-		 Arquivo arq(instancia, i);
-		 Dados *d = arq.lerInstanciaPSPLIB();
+		if(parametros){
+			i = indice;
+		}
+		Arquivo arq(instancia, i);
 
+		Dados *d = arq.lerInstanciaPSPLIB();
 
-		Solucao *s1 = new Solucao(d);
-		s1->iniciarSolucaoComMelhorCusto();
-		d->D = s1->tempo;
+		Solucao *cus = new Solucao(d);
+		cus->iniciarSolucaoComMelhorCusto();
+		d->D = cus->tempo - 1;
 
-		Grafico g;
-		//g.plotarGraficoDaSolucao(s1);
+		//cout << cus->tempo << endl;
 
-		//d->D = s1->tempo;
-
-		//
+		Heuristicas h(d);
 
 		clock_t start_time;
 		start_time = clock();
 
-		Heuristicas h(d);
+		Solucao *s;
+		if (parametros) {
+			s = h.geneticAlgorithms(geracao, tam_pop, mutacao);
+		} else {
+			s = h.geneticAlgorithms(20);
+		}
 
-		//h.pso(50);
-		//Solucao *s = & (*h.fronteira.begin()); // new Solucao(d);//
-
-		Solucao *s = h.geneticAlgorithms(20);
-
-		double time_in_seconds = (clock() - start_time)
+		float time_in_seconds = (clock() - start_time)
 				/ (double) CLOCKS_PER_SEC;
+		//cout << s->custo << " X " << s->tempo << " -> " << time_in_seconds << endl;
 
 		execucao[i] = time_in_seconds;
 		valores[i] = s->custo;
 		tempos[i] = s->tempo;
 
-		//g.plotarTrandOFF(h.fronteira);
-
-
-
-		//instancia_name[i] = arq.nomeArquivo;
-
-		cout << s->custo << " X " << s->tempo << endl;
-		cout << s1->tempo << endl;
-
-		//printf("tempo decorrido: %.2f s\n", time_in_seconds);
-
-		//Teste t(d);
-		//t.testarSolucao(s);
-
-		//s->print();
-
-		//g.plotarGraficoDaSolucao(s);
-
-		//cout << i <<" " << s->custo << " X ";
-		//cout << s->tempo << endl;
-
-		//s->print();
-
-		//h.vizinhacaBalancearUtilizacaoDeRecursos(s)->print();
-		//Solucao *ss = h.fronteira.be;
-		//g.plotarGraficoDaSolucao(ss);
-
-		//g.plotarTrandOFF(h.fronteira);
-
 	}
 
-	for (int i = 0; i <= qt; i++) {
+	for (int i = 0; i < qt; i++) {
 		cout << valores[i] << "\t" << execucao[i] << endl;
 	}
-
-	cout << "Finalizou" << endl;
 	return 0;
 }
 
 void bateriaDeTestesComValores() {
 
-	int repeticoes = 30;
-	int qt_inst = 10;
+	int repeticoes = 10;
+	int qt_inst = 1;
 
 	vector<float> bestCusto(qt_inst, INT_MAX);
 	vector<float> mediaCusto(qt_inst, 0);
@@ -138,22 +115,24 @@ void bateriaDeTestesComValores() {
 
 	cout << "PSPLIB/j10" << endl;
 
-	for (int i = 0 ; i < qt_inst; i++) {
+	for (int i = 0; i < qt_inst; i++) {
 		cout << "\t" << i << " " << endl;
 
 		string instancia = "PSPLIB/j10";
-		 Arquivo arq(instancia, i);
-
-		 Dados *d = arq.lerInstanciaPSPLIB();
-		/*
-		string instancia = "Instancias_Denise";
 		Arquivo arq(instancia, i);
-		Dados *d = arq.lerInstancia();
-		*/
+
+		Dados *d = arq.lerInstanciaPSPLIB();
+		/*
+		 string instancia = "Instancias_Denise";
+		 Arquivo arq(instancia, i);
+		 Dados *d = arq.lerInstancia();
+		 */
 
 		Solucao *cus = new Solucao(d);
 		cus->iniciarSolucaoComMelhorCusto();
 		d->D = cus->tempo - 1;
+
+		cout << cus->tempo << endl;
 
 		for (int rep = 0; rep < repeticoes; rep++) {
 			cout << rep << endl;
@@ -171,7 +150,7 @@ void bateriaDeTestesComValores() {
 
 			float time_in_seconds = (clock() - start_time)
 					/ (double) CLOCKS_PER_SEC;
-
+			cout << s->custo << endl;
 			arq.salvarResposta(i, s->custo, s->tempo, time_in_seconds);
 
 			if (i == qt_inst - 1) {

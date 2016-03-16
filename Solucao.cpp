@@ -496,7 +496,7 @@ int Solucao::verificarMelhorModoPelaMaiorQuantidadeUtilizadaDeK(int j, int k) {
 }
 
 void Solucao::iniciarSolucaoComModosAleatorios() {
-	//srand((unsigned) time(NULL));
+	srand((unsigned) time(NULL));
 	for (int j = 0; j < d->j; j++) {
 		int tini = verificarTempoInicioCedo(j);
 
@@ -508,7 +508,7 @@ void Solucao::iniciarSolucaoComModosAleatorios() {
 }
 
 void Solucao::iniciarSolucaoComModosAleatoriosDentroDaDataLimite() {
-	//srand((unsigned) time(NULL));
+	srand((unsigned) time(NULL));
 	for (int j = d->j - 1; j >= 0; j--) {
 		int tft = verificarTempoInicioTarde(j);
 

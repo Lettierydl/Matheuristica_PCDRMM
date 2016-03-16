@@ -35,6 +35,8 @@ public:
 
 	/*algoritmos de construcao*/
 	Solucao* geneticAlgorithms(int geracoes);//Algoritmos Geneticos, constroe populacoes ate acabar as geracoes
+	Solucao* geneticAlgorithms(int geracoes, int tamanhoPopulacao, float mutacao);// com parametros
+
 
 	/*GRASP*/
 
@@ -73,5 +75,8 @@ public:
 private:
 	vector<Solucao> selecaoECruzamento(vector<Solucao>& populacao);
 
+
 };
+
+
 
