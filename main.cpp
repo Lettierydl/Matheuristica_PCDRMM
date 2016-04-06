@@ -27,7 +27,6 @@ using namespace std;
 
 void bateriaDeTestesComValores();
 
-<<<<<<< HEAD
 void teste_irace(int argc, char* argv[]) {
 	int tam_pop, geracao, indice;
 	float busca;
@@ -93,7 +92,6 @@ void teste_instance(string instance, int indice) {
 	vector<float> tempos(iteracoes, 0);
 	vector<float> valores(iteracoes, 0);
 
-
 	Arquivo arq(instance, indice);
 	Dados *d = arq.lerInstanciaPSPLIB();
 	bool parametros = false;
@@ -110,70 +108,10 @@ void teste_instance(string instance, int indice) {
 		Solucao* s = h.geneticAlgorithms(geracoes);
 
 		float time_in_seconds = (clock() - start_time) / (double) (CLOCKS_PER_SEC);
-=======
-/*geracao, tam_pop, mutacao, instancia*/
-int main(int argc, char *argv[]) {
-//	cout << "PCDRMM_MATHEURISTICA" << endl;
-
-	int tam_pop, geracao,indice;
-	float mutacao;
-	bool parametros = false;
-	if (argc > 1) {
-		geracao = atoi(argv[1]);
-		tam_pop = atoi(argv[2]);
-		mutacao = atof(argv[3]);
-		indice = atoi(argv[4]);
-		parametros = true;
-	}
-
-	//bateriaDeTestesComValores();
-	//return 0;
-	int qt = 1;
-
-	vector<float> execucao(qt, 0);
-	vector<float> tempos(qt, 0);
-	vector<float> valores(qt, 0);
-	vector < string > instancia_name(qt);
-
-	for (int i = 0; i < qt; i++) {
-
-//		cout << "instancia " << i << endl;
-
-		string instancia = "PSPLIB/j10";
-		if(parametros){
-			i = indice;
-		}
-		Arquivo arq(instancia, i);
-
-		Dados *d = arq.lerInstanciaPSPLIB();
-
-		Solucao *cus = new Solucao(d);
-		cus->iniciarSolucaoComMelhorCusto();
-		d->D = cus->tempo - 1;
-
-		//cout << cus->tempo << endl;
-
-		Heuristicas h(d);
-
-		clock_t start_time;
-		start_time = clock();
-
-		Solucao *s;
-		if (parametros) {
-			s = h.geneticAlgorithms(geracao, tam_pop, mutacao);
-		} else {
-			s = h.geneticAlgorithms(20);
-		}
-
-		float time_in_seconds = (clock() - start_time)
-				/ (double) CLOCKS_PER_SEC;
-		//cout << s->custo << " X " << s->tempo << " -> " << time_in_seconds << endl;
->>>>>>> 656a210bd8b33589b8534cf763154a11f116a0e8
 
 		execucao[i] = time_in_seconds;
 		valores[i] = s->custo;
 		tempos[i] = s->tempo;
-<<<<<<< HEAD
 	}
 	float c_best = valores[0];
 	for (int i = 0; i < iteracoes; i++) {
@@ -194,32 +132,20 @@ int main(int argc, char *argv[]) {
 
 /*instancia, geracao, tam_pop*/
 int main(int argc, char *argv[]) {
-	bateriaDeTestesComValores();
-	return 0;
+	//bateriaDeTestesComValores();
+	//return 0;
 	if(argc > 1){
 		teste_irace(argc, argv);
 	}else{
 		teste_instance("PSPLIB/j10" , 0 );
-=======
-
-	}
-
-	for (int i = 0; i < qt; i++) {
-		cout << valores[i] << "\t" << execucao[i] << endl;
->>>>>>> 656a210bd8b33589b8534cf763154a11f116a0e8
 	}
 	return 0;
 }
 
 void bateriaDeTestesComValores() {
 
-<<<<<<< HEAD
 	int repeticoes = 50;
 	int qt_inst = 2;
-=======
-	int repeticoes = 10;
-	int qt_inst = 1;
->>>>>>> 656a210bd8b33589b8534cf763154a11f116a0e8
 
 	vector<float> bestCusto(qt_inst, INT_MAX);
 	vector<float> mediaCusto(qt_inst, 0);
@@ -232,24 +158,14 @@ void bateriaDeTestesComValores() {
 	vector < map<float, int> > modaCusto(qt_inst);
 	vector < map<float, int> > modaTempo(qt_inst);
 
-<<<<<<< HEAD
 	cout << "PSPLIB/j30" << endl;
-=======
-	cout << "PSPLIB/j10" << endl;
->>>>>>> 656a210bd8b33589b8534cf763154a11f116a0e8
 
 	for (int i = 0; i < qt_inst; i++) {
 		cout << "\t" << i << " " << endl;
 
-<<<<<<< HEAD
 		string instancia = "PSPLIB/j30";
 		Arquivo arq(instancia, i);
 		cout <<arq.nomeArquivo << endl;
-=======
-		string instancia = "PSPLIB/j10";
-		Arquivo arq(instancia, i);
-
->>>>>>> 656a210bd8b33589b8534cf763154a11f116a0e8
 		Dados *d = arq.lerInstanciaPSPLIB();
 		/*
 		 string instancia = "Instancias_Denise";
@@ -261,11 +177,7 @@ void bateriaDeTestesComValores() {
 		cus->iniciarSolucaoComMelhorCusto();
 		d->D = cus->tempo - 1;
 
-<<<<<<< HEAD
 		//cout << cus->tempo << endl;
-=======
-		cout << cus->tempo << endl;
->>>>>>> 656a210bd8b33589b8534cf763154a11f116a0e8
 
 		for (int rep = 0; rep < repeticoes; rep++) {
 			cout << rep << endl;
@@ -275,30 +187,14 @@ void bateriaDeTestesComValores() {
 			clock_t start_time;
 			start_time = clock();
 
-<<<<<<< HEAD
 			Solucao *s = h.geneticAlgorithms(22);
 
 			float time_in_seconds = (clock() - start_time)/ (double) CLOCKS_PER_SEC;
 
-=======
-			//h.pso(50);
-
-			//Solucao *s = &(*h.fronteira.begin()); // new Solucao(d);//
-
-			Solucao *s = h.geneticAlgorithms(20);
-
-			float time_in_seconds = (clock() - start_time)
-					/ (double) CLOCKS_PER_SEC;
-			cout << s->custo << endl;
->>>>>>> 656a210bd8b33589b8534cf763154a11f116a0e8
 			arq.salvarResposta(i, s->custo, s->tempo, time_in_seconds);
 
 			if (i == qt_inst - 1) {
 				arq.salvarResposta(0, 0, 0, 0);
-<<<<<<< HEAD
-=======
-				arq.salvarResposta(0, 0, 0, 0);
->>>>>>> 656a210bd8b33589b8534cf763154a11f116a0e8
 			}
 
 			if (s->custo < bestCusto[i]) {

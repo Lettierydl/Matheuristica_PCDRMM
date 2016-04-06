@@ -23,7 +23,7 @@ Solucao::Solucao(Dados * d) {
 	this->d = d;
 	this->custo = 0;
 	this->tempo = 0;
-
+    
 	/*PSO*/
 	this->pbest = NULL;
 	this->gbest = NULL;

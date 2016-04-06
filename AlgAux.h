@@ -8,7 +8,7 @@
 #include "Dados.h"
 #include "Solucao.h"
 #include <vector>
-#include <list>
+#include <list> 
 #include <iostream>
 #include <string>
 #include "stdlib.h"

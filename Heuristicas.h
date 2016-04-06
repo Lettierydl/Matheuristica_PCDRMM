@@ -61,10 +61,7 @@ public:
 	Solucao cruzamento(Solucao s1, Solucao s2);
 	vector<Solucao> cruzamento2(Solucao s1, Solucao s2);
 	vector<Solucao> roleta(vector<Solucao> & populacao, int qt_selecionados);
-<<<<<<< HEAD
 	vector<int> selecao(int tamanhoPopulacao, float elite, float randomico);
-=======
->>>>>>> 656a210bd8b33589b8534cf763154a11f116a0e8
 
 	void mutar(Solucao s1);
 
