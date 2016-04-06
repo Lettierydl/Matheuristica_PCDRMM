@@ -480,12 +480,115 @@ void Heuristicas::iniciarEnxame(int tamanhoPopulacao, int maxVparticula,
 
 Solucao * Heuristicas::geneticAlgorithms(int geracoes) {
 	vector<Solucao> populacao; //populacao sempre deve ter um numero par de individuos
+<<<<<<< HEAD
 	int tamanhoPopulacao = 23;
 	return geneticAlgorithms(geracoes, tamanhoPopulacao, 0.2);
 
 }
 
 Solucao * Heuristicas::geneticAlgorithms(int geracoes, int tamanhoPopulacao, float busca) {
+
+	vector<Solucao> populacao; //populacao sempre deve ter um numero par de individuos
+=======
+	int tamanhoPopulacao = 20;
+>>>>>>> 656a210bd8b33589b8534cf763154a11f116a0e8
+
+	//populacao inicial
+	for (int tam = 0; tam < tamanhoPopulacao; tam++) {
+		populacao.push_back(new Solucao(d));
+	}
+
+	populacao[0].iniciarSolucaoComMelhorCusto();
+	populacao[1].iniciarSolucaoComMelhorMakespan();
+	populacao[2].iniciarSolucaoComMenorUtilizacao();
+	populacao[3].iniciarSolucaoComMenorUtilizacaoBalanceadaDeRecursos();
+	populacao[4].iniciarSolucaoComModosAleatoriosDentroDaDataLimite();
+
+	for (int tam = 5; tam < tamanhoPopulacao; tam++) {
+		populacao[tam].iniciarSolucaoComModosAleatoriosDentroDaDataLimite();
+		//populacao[tam].iniciarSolucaoComModosAleatorios();
+	}
+
+	for (int g = 0; g < geracoes; g++) {
+
+		/*avaliacao da populacao*/
+		SolucaoCompareAG sAG;
+		SolucaoComparePorcentagem scp;
+
+		sort(populacao.begin(), populacao.end(), sAG);
+
+		/*selecao e cruzamento*/
+		vector<Solucao> gerados = selecaoECruzamento(populacao);
+
+		for (int i = 0; i < gerados.size(); i++) {
+			populacao.push_back(gerados[i]);
+		}
+
+		sort(populacao.begin(), populacao.end(), sAG);
+
+		//populcao  com tamanho fixo tamanhoPopulacao
+		for (int ruin = populacao.size() - 1;
+				populacao.size() != tamanhoPopulacao; ruin--) {
+			populacao.erase(--populacao.end());
+		}
+
+		if ((populacao.size() % 2) != 0) { //populacao impar
+			populacao.erase(--populacao.end());
+		}
+
+<<<<<<< HEAD
+		//selecao para vizinhanca exata
+		vector<int> selec = selecao(populacao.size(), 0.05, 0.05);
+		for (int v = 0; v < selec.size(); v++) { //vizinhanca
+			vizinhancaCPLEX(&populacao[selec[v]]);
+		}
+
+=======
+		srand((unsigned) time(NULL));
+		int rad = rand() % populacao.size();
+		vizinhancaCPLEX(&populacao[0]);
+		vizinhancaCPLEX(&populacao[rad]);
+>>>>>>> 656a210bd8b33589b8534cf763154a11f116a0e8
+
+		sort(populacao.begin(), populacao.end(), sAG);
+
+		for (int i = 0; i < populacao.size(); i++) {
+			addFronteiraDePareto(&populacao[i]);
+		}
+	}
+
+	for (int i = 0; i < populacao.size(); i++) {
+		addFronteiraDePareto(&populacao[i]);
+	}
+
+	Solucao * best = new Solucao(populacao[0]);
+	vizinhancaCPLEX(best);
+	return best;
+
+}
+
+<<<<<<< HEAD
+vector<int> Heuristicas::selecao(int tamanhoPopulacao, float elite, float randomico) {
+	vector<int> selec;
+	for (int v = 0; v < (tamanhoPopulacao * elite); v++) { //% elite
+		selec.push_back(v);
+	}
+
+	srand((unsigned) time(NULL));
+	for (int v = 0; v < (tamanhoPopulacao * randomico); v++) { //% aleatorio
+		int rad = rand() % (tamanhoPopulacao-1);
+
+		while ( find(selec.begin(), selec.end(), rad) != selec.end() ) {// ja foi selecionado
+			rad++;
+			if (rad >= tamanhoPopulacao) {
+				rad = (tamanhoPopulacao * elite); //reinicia a busca por individuos - os 10% da elite
+			}
+		}
+		selec.push_back(rad);
+	}
+	return selec;
+=======
+Solucao * Heuristicas::geneticAlgorithms(int geracoes, int tamanhoPopulacao,  float mutacao) {
 
 	vector<Solucao> populacao; //populacao sempre deve ter um numero par de individuos
 
@@ -532,12 +635,10 @@ Solucao * Heuristicas::geneticAlgorithms(int geracoes, int tamanhoPopulacao, flo
 			populacao.erase(--populacao.end());
 		}
 
-		//selecao para vizinhanca exata
-		vector<int> selec = selecao(populacao.size(), 0.05, 0.05);
-		for (int v = 0; v < selec.size(); v++) { //vizinhanca
-			vizinhancaCPLEX(&populacao[selec[v]]);
-		}
-
+		srand((unsigned) time(NULL));
+		int rad = rand() % populacao.size();
+		vizinhancaCPLEX(&populacao[0]);
+		vizinhancaCPLEX(&populacao[rad]);
 
 		sort(populacao.begin(), populacao.end(), sAG);
 
@@ -554,27 +655,7 @@ Solucao * Heuristicas::geneticAlgorithms(int geracoes, int tamanhoPopulacao, flo
 	vizinhancaCPLEX(best);
 	return best;
 
-}
-
-vector<int> Heuristicas::selecao(int tamanhoPopulacao, float elite, float randomico) {
-	vector<int> selec;
-	for (int v = 0; v < (tamanhoPopulacao * elite); v++) { //% elite
-		selec.push_back(v);
-	}
-
-	srand((unsigned) time(NULL));
-	for (int v = 0; v < (tamanhoPopulacao * randomico); v++) { //% aleatorio
-		int rad = rand() % (tamanhoPopulacao-1);
-
-		while ( find(selec.begin(), selec.end(), rad) != selec.end() ) {// ja foi selecionado
-			rad++;
-			if (rad >= tamanhoPopulacao) {
-				rad = (tamanhoPopulacao * elite); //reinicia a busca por individuos - os 10% da elite
-			}
-		}
-		selec.push_back(rad);
-	}
-	return selec;
+>>>>>>> 656a210bd8b33589b8534cf763154a11f116a0e8
 }
 
 vector<Solucao> Heuristicas::roleta(vector<Solucao> & populacao,

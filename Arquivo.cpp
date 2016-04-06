@@ -28,6 +28,7 @@ void Arquivo::instancia_denise(int numero, const string& nomeArquivo) {
 	}
 }
 
+<<<<<<< HEAD
 void Arquivo::instancia_denise(const string& nomeArquivo) {
 	this->nomeArquivo = nomeArquivo;
 	this->dados.open((this->nomeArquivo).c_str(), ios::in);
@@ -37,6 +38,8 @@ void Arquivo::instancia_denise(const string& nomeArquivo) {
 	}
 }
 
+=======
+>>>>>>> 656a210bd8b33589b8534cf763154a11f116a0e8
 
 void Arquivo::instancia_PSPLIB(int indice, vector<string> arq, const string& nomeArquivo) {
 	stringstream ss;
@@ -51,6 +54,7 @@ void Arquivo::instancia_PSPLIB(int indice, vector<string> arq, const string& nom
 	}
 }
 
+<<<<<<< HEAD
 void Arquivo::instancia_PSPLIB(const string& nomeArquivo) {
 	this->nomeArquivo = nomeArquivo;
 	this->dados.open((this->nomeArquivo).c_str(), ios::in);
@@ -62,6 +66,8 @@ void Arquivo::instancia_PSPLIB(const string& nomeArquivo) {
 	}
 }
 
+=======
+>>>>>>> 656a210bd8b33589b8534cf763154a11f116a0e8
 
 Arquivo::Arquivo(string nomeArquivo, int numero) {
 	if(nomeArquivo.compare("Instancias_Denise") == 0){
@@ -72,6 +78,7 @@ Arquivo::Arquivo(string nomeArquivo, int numero) {
 	}
 }
 
+<<<<<<< HEAD
 Arquivo::Arquivo(string nomeArquivo) {
 	if(nomeArquivo.find("Instancias_Denise") != string::npos){
 		instancia_denise(nomeArquivo);
@@ -80,6 +87,8 @@ Arquivo::Arquivo(string nomeArquivo) {
 	}
 }
 
+=======
+>>>>>>> 656a210bd8b33589b8534cf763154a11f116a0e8
 
 void Arquivo::clouse(){
 	this->dados.close();
@@ -334,7 +343,11 @@ vector<string> Arquivo::arquivosInstancias(string *url) {
 		/* Obter informaçoes de entrada */
 		stringstream ss;
 
+<<<<<<< HEAD
 		if (dp->d_namlen > 9) {
+=======
+		if (dp->d_namlen > 4) {
+>>>>>>> 656a210bd8b33589b8534cf763154a11f116a0e8
 			ss<<dp->d_name;
 			arquivos.push_back(ss.str());
 		}
